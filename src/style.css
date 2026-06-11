@@ -395,8 +395,10 @@ body {
   transition: background 0.15s ease, transform 0.1s ease;
 }
 
-.control-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+@media (hover: hover) {
+  .control-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
 }
 
 .control-btn:active {
