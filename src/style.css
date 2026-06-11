@@ -80,7 +80,7 @@ body {
   }
 
   .spotify-panel {
-    --album-size: clamp(80px, 22vw, 140px);
+    --album-size: clamp(70px, 20vw, 120px);
   }
 
   .album-art {
@@ -88,7 +88,11 @@ body {
   }
 
   .queue-section {
-    margin-top: clamp(8px, 1.4vh, 16px);
+    margin-top: clamp(6px, 1vh, 12px);
+  }
+
+  .queue-list li:nth-child(n + 2) {
+    display: none;
   }
 
   .weather-forecast {
@@ -713,7 +717,7 @@ body {
   }
 
   .weather-forecast {
-    height: clamp(60px, 14vh, 110px);
+    height: clamp(70px, 28vh, 130px);
   }
 
   .np-now {
