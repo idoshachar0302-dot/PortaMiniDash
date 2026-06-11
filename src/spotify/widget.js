@@ -6,8 +6,7 @@ import { isElectron, isCapacitor } from '../lib/platform.js';
 import { setMarqueeText } from '../lib/marquee.js';
 
 const POLL_MS = 5000;
-const MAX_QUEUE_ITEMS_PORTRAIT = 2;
-const MAX_QUEUE_ITEMS_LANDSCAPE = 1;
+const MAX_QUEUE_ITEMS = 2;
 
 function formatMs(ms) {
   const safeMs = ms && ms > 0 ? ms : 0;
@@ -100,10 +99,7 @@ export function initSpotify() {
       return;
     }
 
-    const isLandscape = window.matchMedia('(orientation: landscape)').matches;
-    const maxItems = isLandscape ? MAX_QUEUE_ITEMS_LANDSCAPE : MAX_QUEUE_ITEMS_PORTRAIT;
-
-    queue.slice(0, maxItems).forEach((track) => {
+    queue.slice(0, MAX_QUEUE_ITEMS).forEach((track) => {
       const li = document.createElement('li');
       li.className = 'queue-track';
       li.title = 'Play now (replaces current queue)';
