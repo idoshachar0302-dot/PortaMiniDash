@@ -130,6 +130,7 @@ export function initSpotify() {
   }
 
   let hasError = false;
+  let isBusy = false;
 
   function setControlsEnabled(enabled) {
     els.prevBtn.disabled = !enabled;
@@ -138,9 +139,12 @@ export function initSpotify() {
   }
 
   // Spotify's player state takes a moment to update after a control command,
-  // so wait briefly before polling for the new state.
+  // so wait briefly before polling for the new state. Uses a plain flag
+  // (rather than the `disabled` attribute) so the other control buttons
+  // don't visually flash their disabled state on every press.
   async function withControlFeedback(action) {
-    setControlsEnabled(false);
+    if (isBusy) return;
+    isBusy = true;
     try {
       await action();
       await new Promise((resolve) => setTimeout(resolve, 300));
@@ -150,7 +154,7 @@ export function initSpotify() {
       hasError = true;
       els.status.textContent = err.message || 'Connection error';
     } finally {
-      setControlsEnabled(true);
+      isBusy = false;
     }
   }
 
