@@ -50,6 +50,10 @@ export async function startAuth() {
     code_challenge_method: 'S256',
     code_challenge: codeChallenge,
     state,
+    // Spotify has no true "force re-login" param. show_dialog forces the
+    // approval screen (with a "Not you?" account-switch link) every time,
+    // instead of silently re-issuing a code for an already-approved app.
+    show_dialog: 'true',
   });
 
   const authUrl = `${AUTHORIZE_URL}?${params.toString()}`;

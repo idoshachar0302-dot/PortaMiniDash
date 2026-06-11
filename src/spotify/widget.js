@@ -1,6 +1,6 @@
 import { Browser } from '@capacitor/browser';
 import { isConnected, startAuth, disconnect, handleAuthCode, getWebRedirectParams } from './auth.js';
-import { getCurrentlyPlaying, getQueue, play, pause, skipToNext, skipToPrevious, playTrackUri } from './api.js';
+import { getCurrentlyPlaying, getQueue, play, pause, skipToNext, skipToPrevious, playTrackUri, setVolume } from './api.js';
 import { config } from '../config.js';
 import { isCapacitor } from '../lib/platform.js';
 import { setMarqueeText } from '../lib/marquee.js';
@@ -35,9 +35,11 @@ export function initSpotify() {
     status: document.getElementById('spotify-status'),
     prevBtn: document.getElementById('prev-btn'),
     nextBtn: document.getElementById('next-btn'),
+    volumeSlider: document.getElementById('volume-slider'),
   };
 
   let progressState = null; // { startProgress, startTime, duration, isPlaying }
+  let isAdjustingVolume = false;
 
   function updateProgressUI(progress, duration) {
     els.progressFill.style.width = duration ? `${Math.min(100, (progress / duration) * 100)}%` : '0%';
@@ -61,6 +63,10 @@ export function initSpotify() {
   // closer to the real current position instead of lagging behind it.
   function renderNowPlaying(data, latencyMs = 0) {
     const track = data?.item;
+
+    if (!isAdjustingVolume && data?.device?.volume_percent != null) {
+      els.volumeSlider.value = String(data.device.volume_percent);
+    }
 
     if (!track) {
       setMarqueeText(els.title, 'Nothing playing');
@@ -136,6 +142,7 @@ export function initSpotify() {
     els.prevBtn.disabled = !enabled;
     els.albumArt.disabled = !enabled;
     els.nextBtn.disabled = !enabled;
+    els.volumeSlider.disabled = !enabled;
   }
 
   // Spotify's player state takes a moment to update after a control command,
@@ -194,6 +201,29 @@ export function initSpotify() {
   els.albumArt.addEventListener('click', () =>
     withControlFeedback(() => (progressState?.isPlaying ? pause() : play())),
   );
+
+  els.volumeSlider.addEventListener('pointerdown', () => {
+    isAdjustingVolume = true;
+  });
+  els.volumeSlider.addEventListener('touchstart', () => {
+    isAdjustingVolume = true;
+  }, { passive: true });
+  els.volumeSlider.addEventListener('change', async () => {
+    try {
+      await setVolume(Number(els.volumeSlider.value));
+      hasError = false;
+      els.status.textContent = 'Connected';
+    } catch (err) {
+      console.error('Spotify volume change failed', err);
+      hasError = true;
+      els.status.textContent = err.message || 'Connection error';
+    } finally {
+      isAdjustingVolume = false;
+    }
+  });
+  els.volumeSlider.addEventListener('pointerup', () => {
+    isAdjustingVolume = false;
+  });
 
   els.connectBtn.addEventListener('click', async () => {
     if (await isConnected()) {

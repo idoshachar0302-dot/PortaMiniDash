@@ -55,6 +55,10 @@ export function pause() {
   return spotifyFetch('/me/player/pause', { method: 'PUT' });
 }
 
+export function setVolume(percent) {
+  return spotifyFetch(`/me/player/volume?volume_percent=${percent}`, { method: 'PUT' });
+}
+
 export function skipToNext() {
   return spotifyFetch('/me/player/next', { method: 'POST' });
 }
