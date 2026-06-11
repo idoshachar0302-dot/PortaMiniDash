@@ -50,73 +50,6 @@ body {
   gap: clamp(10px, 1.6vw, 20px);
 }
 
-/* Landscape (small monitor): clocks + weather stacked on the left (~2/3),
-   Spotify panel spans both rows on the right (~1/3) */
-@media (orientation: landscape) {
-  .dashboard {
-    grid-template-areas:
-      "clocks  spotify"
-      "weather spotify";
-    grid-template-columns: 2fr 1fr;
-    grid-template-rows: minmax(0, 1.3fr) minmax(0, 1fr);
-  }
-
-  .weather-content {
-    gap: clamp(8px, 1.5vw, 16px);
-  }
-
-  .weather-icon {
-    font-size: clamp(1.6rem, 5vh, 3.5rem);
-  }
-
-  .weather-temp {
-    font-size: clamp(1.2rem, 4vh, 2.4rem);
-  }
-
-  .spotify-panel {
-    flex-direction: row;
-    align-items: stretch;
-    gap: clamp(10px, 2vw, 24px);
-  }
-
-  .album-art {
-    width: clamp(70px, min(20vw, 26vh), 160px);
-    height: clamp(70px, min(20vw, 26vh), 160px);
-  }
-
-  .np-now {
-    flex: 0 0 auto;
-    width: auto;
-    margin-bottom: 0;
-  }
-
-  .np-details {
-    flex: 1 1 0;
-    justify-content: center;
-  }
-
-  .progress-bar {
-    margin-top: clamp(6px, 1.2vh, 14px);
-  }
-
-  .queue-section {
-    margin-top: clamp(3px, 0.6vh, 8px);
-  }
-
-  .section-label {
-    margin-bottom: 4px;
-  }
-
-  .queue-list {
-    gap: clamp(3px, 0.6vh, 8px);
-  }
-
-  .queue-art {
-    width: clamp(28px, 6vw, 40px);
-    height: clamp(28px, 6vw, 40px);
-  }
-}
-
 /* Portrait (phone): Spotify on top, clocks + weather stacked below */
 @media (orientation: portrait) {
   .dashboard {
@@ -632,4 +565,71 @@ body {
 .status-text {
   color: var(--text-dim);
   font-size: 0.9rem;
+}
+
+/* Landscape (small monitor): clocks + weather stacked on the left (~2/3),
+   Spotify panel spans both rows on the right (~1/3) */
+@media (orientation: landscape) {
+  .dashboard {
+    grid-template-areas:
+      "clocks  spotify"
+      "weather spotify";
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: minmax(0, 1.3fr) minmax(0, 1fr);
+  }
+
+  .weather-content {
+    gap: clamp(8px, 1.5vw, 16px);
+  }
+
+  .weather-icon {
+    font-size: clamp(1.6rem, 5vh, 3.5rem);
+  }
+
+  .weather-temp {
+    font-size: clamp(1.2rem, 4vh, 2.4rem);
+  }
+
+  .spotify-panel {
+    flex-direction: row;
+    align-items: stretch;
+    gap: clamp(10px, 2vw, 24px);
+  }
+
+  .album-art {
+    width: clamp(70px, min(20vw, 26vh), 160px);
+    height: clamp(70px, min(20vw, 26vh), 160px);
+  }
+
+  .np-now {
+    flex: 0 0 auto;
+    width: auto;
+    margin-bottom: 0;
+  }
+
+  .np-details {
+    flex: 1 1 0;
+    justify-content: center;
+  }
+
+  .progress-bar {
+    margin-top: clamp(6px, 1.2vh, 14px);
+  }
+
+  .queue-section {
+    margin-top: clamp(3px, 0.6vh, 8px);
+  }
+
+  .section-label {
+    margin-bottom: 4px;
+  }
+
+  .queue-list {
+    gap: clamp(3px, 0.6vh, 8px);
+  }
+
+  .queue-art {
+    width: clamp(28px, 6vw, 40px);
+    height: clamp(28px, 6vw, 40px);
+  }
 }
