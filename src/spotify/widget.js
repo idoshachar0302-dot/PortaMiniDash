@@ -4,6 +4,7 @@ import { getCurrentlyPlaying, getQueue, play, pause, skipToNext, skipToPrevious,
 import { config } from '../config.js';
 import { isElectron, isCapacitor } from '../lib/platform.js';
 import { setMarqueeText } from '../lib/marquee.js';
+import { ICON_PLAY, ICON_PAUSE } from '../lib/icons.js';
 
 const POLL_MS = 5000;
 const MAX_QUEUE_ITEMS = 2;
@@ -65,7 +66,7 @@ export function initSpotify() {
       setMarqueeText(els.title, 'Nothing playing');
       els.artist.textContent = '';
       els.albumArt.style.backgroundImage = '';
-      els.albumArtIcon.textContent = '▶';
+      els.albumArtIcon.innerHTML = ICON_PLAY;
       progressState = null;
       updateProgressUI(0, 0);
       return;
@@ -84,7 +85,7 @@ export function initSpotify() {
 
     progressState = { startProgress, startTime: performance.now(), duration, isPlaying };
     updateProgressUI(startProgress, duration);
-    els.albumArtIcon.textContent = isPlaying ? '⏸' : '▶';
+    els.albumArtIcon.innerHTML = isPlaying ? ICON_PAUSE : ICON_PLAY;
   }
 
   function renderQueue(data) {

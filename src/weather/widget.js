@@ -1,24 +1,13 @@
 import { config } from '../config.js';
 import { getCurrentPosition, reverseGeocode } from '../location/geo.js';
+import { WEATHER_ICONS, ICON_THERMOMETER } from '../lib/icons.js';
 
 const WEATHER_REFRESH_MS = 10 * 60 * 1000; // weather changes slowly, poll every 10 min
 const LOCATION_REFRESH_MS = 30 * 60 * 1000; // re-check location every 30 min
 
-const ICONS = {
-  '01': '☀️',
-  '02': '⛅',
-  '03': '☁️',
-  '04': '☁️',
-  '09': '🌧️',
-  10: '🌦️',
-  11: '⛈️',
-  13: '❄️',
-  50: '🌫️',
-};
-
 function iconFor(owmIconCode) {
   const key = owmIconCode ? owmIconCode.slice(0, 2) : '';
-  return ICONS[key] || '🌡️';
+  return WEATHER_ICONS[key] || ICON_THERMOMETER;
 }
 
 async function fetchCurrentWeather(lat, lon) {
@@ -51,7 +40,7 @@ export function initWeather() {
     try {
       const data = await fetchCurrentWeather(coords.lat, coords.lon);
       const weather = data.weather?.[0];
-      els.icon.textContent = iconFor(weather?.icon);
+      els.icon.innerHTML = iconFor(weather?.icon);
       els.temp.textContent = `${Math.round(data.main.temp)}°C`;
       els.desc.textContent = weather?.description ?? '--';
       els.location.textContent = placeName || data.name || '--';
