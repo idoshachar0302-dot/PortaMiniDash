@@ -590,9 +590,19 @@ body {
     font-size: clamp(1.2rem, 4vh, 2.4rem);
   }
 
+  .np-now {
+    gap: clamp(4px, 1vw, 10px);
+  }
+
+  .control-btn {
+    width: clamp(1.6rem, 4vw, 2.2rem);
+    height: clamp(1.6rem, 4vw, 2.2rem);
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+  }
+
   .album-art {
-    width: clamp(100px, min(40vw, 40vh), 270px);
-    height: clamp(100px, min(40vw, 40vh), 270px);
+    width: clamp(100px, min(44vw, 42vh), 290px);
+    height: clamp(100px, min(44vw, 42vh), 290px);
   }
 
   .progress-bar {
