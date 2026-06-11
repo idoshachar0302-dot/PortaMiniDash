@@ -235,7 +235,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(4px, 1.2vw, 12px);
+  gap: clamp(2px, 0.6vw, 6px);
   width: 100%;
   min-width: 0;
   margin-bottom: clamp(8px, 1.4vh, 16px);
@@ -402,6 +402,7 @@ body {
 }
 
 .control-btn:active {
+  background: rgba(255, 255, 255, 0.08);
   transform: scale(0.94);
 }
 
@@ -599,7 +600,7 @@ body {
   }
 
   .np-now {
-    gap: clamp(3px, 0.8vw, 8px);
+    gap: clamp(2px, 0.5vw, 5px);
   }
 
   .control-btn {
