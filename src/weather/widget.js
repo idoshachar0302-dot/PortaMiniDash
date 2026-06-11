@@ -98,7 +98,7 @@ function renderForecastSvg(days) {
     )
     .join('');
 
-  return `<svg viewBox="0 0 ${FORECAST_VIEWBOX_W} ${FORECAST_VIEWBOX_H}" preserveAspectRatio="none" class="forecast-svg" role="img" aria-label="${FORECAST_DAYS_AHEAD}-day temperature forecast">
+  return `<svg viewBox="0 0 ${FORECAST_VIEWBOX_W} ${FORECAST_VIEWBOX_H}" preserveAspectRatio="xMidYMid meet" class="forecast-svg" role="img" aria-label="${FORECAST_DAYS_AHEAD}-day temperature forecast">
     <polyline points="${polylinePoints}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
     ${circles}
     ${tempLabels}
