@@ -46,20 +46,23 @@
 
         <section class="panel spotify-panel" id="now-playing">
           <div class="np-now">
-            <div class="album-art" id="album-art"></div>
+            <button class="control-btn np-side-btn" id="prev-btn" aria-label="Previous track" disabled>⏮</button>
+
+            <button class="album-art" id="album-art" aria-label="Play or pause" disabled>
+              <span class="album-art-icon" id="album-art-icon">▶</span>
+            </button>
+
+            <button class="control-btn np-side-btn" id="next-btn" aria-label="Next track" disabled>⏭</button>
+          </div>
+
+          <div class="np-info">
             <div class="track-title" id="track-title">Nothing playing</div>
             <div class="track-artist" id="track-artist">Connect Spotify in settings</div>
-          </div>
 
-          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-          <div class="progress-time">
-            <span id="progress-current">0:00</span> / <span id="progress-total">0:00</span>
-          </div>
-
-          <div class="np-controls">
-            <button class="control-btn" id="prev-btn" aria-label="Previous track" disabled>⏮</button>
-            <button class="control-btn control-btn-main" id="play-pause-btn" aria-label="Play or pause" disabled>▶</button>
-            <button class="control-btn" id="next-btn" aria-label="Next track" disabled>⏭</button>
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            <div class="progress-time">
+              <span id="progress-current">0:00</span> / <span id="progress-total">0:00</span>
+            </div>
           </div>
 
           <div class="queue-section">

@@ -23,6 +23,7 @@ function trackArtists(track) {
 export function initSpotify() {
   const els = {
     albumArt: document.getElementById('album-art'),
+    albumArtIcon: document.getElementById('album-art-icon'),
     title: document.getElementById('track-title'),
     artist: document.getElementById('track-artist'),
     progressFill: document.getElementById('progress-fill'),
@@ -32,7 +33,6 @@ export function initSpotify() {
     connectBtn: document.getElementById('spotify-connect-btn'),
     status: document.getElementById('spotify-status'),
     prevBtn: document.getElementById('prev-btn'),
-    playPauseBtn: document.getElementById('play-pause-btn'),
     nextBtn: document.getElementById('next-btn'),
   };
 
@@ -65,7 +65,7 @@ export function initSpotify() {
       setMarqueeText(els.title, 'Nothing playing');
       els.artist.textContent = '';
       els.albumArt.style.backgroundImage = '';
-      els.playPauseBtn.textContent = '▶';
+      els.albumArtIcon.textContent = '▶';
       progressState = null;
       updateProgressUI(0, 0);
       return;
@@ -84,7 +84,7 @@ export function initSpotify() {
 
     progressState = { startProgress, startTime: performance.now(), duration, isPlaying };
     updateProgressUI(startProgress, duration);
-    els.playPauseBtn.textContent = isPlaying ? '⏸' : '▶';
+    els.albumArtIcon.textContent = isPlaying ? '⏸' : '▶';
   }
 
   function renderQueue(data) {
@@ -132,7 +132,7 @@ export function initSpotify() {
 
   function setControlsEnabled(enabled) {
     els.prevBtn.disabled = !enabled;
-    els.playPauseBtn.disabled = !enabled;
+    els.albumArt.disabled = !enabled;
     els.nextBtn.disabled = !enabled;
   }
 
@@ -186,7 +186,7 @@ export function initSpotify() {
 
   els.prevBtn.addEventListener('click', () => withControlFeedback(skipToPrevious));
   els.nextBtn.addEventListener('click', () => withControlFeedback(skipToNext));
-  els.playPauseBtn.addEventListener('click', () =>
+  els.albumArt.addEventListener('click', () =>
     withControlFeedback(() => (progressState?.isPlaying ? pause() : play())),
   );
 
