@@ -73,35 +73,17 @@ body {
     font-size: clamp(1.2rem, 4vh, 2.4rem);
   }
 
-  .spotify-panel {
-    overflow: hidden;
-  }
-
   .album-art {
-    width: clamp(56px, min(16vw, 18vh), 110px);
-    height: clamp(56px, min(16vw, 18vh), 110px);
+    width: clamp(70px, min(20vw, 26vh), 160px);
+    height: clamp(70px, min(20vw, 26vh), 160px);
   }
 
   .np-now {
-    margin-bottom: clamp(2px, 0.5vh, 6px);
-  }
-
-  .track-title {
-    font-size: clamp(0.85rem, 1.8vw, 1.1rem);
-  }
-
-  .track-artist {
-    font-size: clamp(0.7rem, 1.3vw, 0.9rem);
-    margin-top: 0;
+    margin-bottom: clamp(4px, 1vh, 10px);
   }
 
   .progress-bar {
-    margin-top: clamp(3px, 0.6vh, 8px);
-  }
-
-  .progress-time {
-    margin-top: 2px;
-    font-size: clamp(0.6rem, 1.1vw, 0.8rem);
+    margin-top: clamp(6px, 1.2vh, 14px);
   }
 
   .queue-section {
