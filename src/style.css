@@ -35,7 +35,10 @@ body {
   height: 100vh;
   height: 100dvh;
   width: 100vw;
-  padding: clamp(8px, 2vw, 24px);
+  padding: max(clamp(8px, 2vw, 24px), env(safe-area-inset-top))
+    max(clamp(8px, 2vw, 24px), env(safe-area-inset-right))
+    max(clamp(8px, 2vw, 24px), env(safe-area-inset-bottom))
+    max(clamp(8px, 2vw, 24px), env(safe-area-inset-left));
 }
 
 /* ---------- Layout ---------- */
@@ -67,11 +70,26 @@ body {
       "clocks"
       "weather";
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(0, 3fr) auto auto;
+    grid-template-rows: minmax(0, 2.2fr) minmax(0, auto) minmax(0, auto);
+    gap: clamp(8px, 1.6vw, 14px);
   }
 
   .clocks-panel {
     flex-direction: row;
+  }
+
+  .panel {
+    padding: clamp(10px, 3vw, 18px);
+  }
+
+  .album-art {
+    width: clamp(90px, 26vw, 160px);
+    height: clamp(90px, 26vw, 160px);
+    margin-bottom: clamp(6px, 1.2vh, 12px);
+  }
+
+  .queue-section {
+    margin-top: clamp(8px, 1.4vh, 16px);
   }
 }
 
@@ -81,6 +99,7 @@ body {
   justify-content: space-between;
   align-items: center;
   gap: clamp(8px, 2vw, 24px);
+  min-height: 0;
 }
 
 .weather-panel {
@@ -102,6 +121,7 @@ body {
   padding: clamp(14px, 1.8vw, 26px);
   display: flex;
   flex-direction: column;
+  min-height: 0;
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
@@ -178,11 +198,16 @@ body {
   align-items: center;
   gap: clamp(10px, 2vw, 20px);
   flex: 1;
+  min-width: 0;
 }
 
 .weather-icon {
   font-size: clamp(2rem, 6vw, 3.5rem);
   flex: 0 0 auto;
+}
+
+.weather-info {
+  min-width: 0;
 }
 
 .weather-temp {
@@ -195,12 +220,16 @@ body {
   color: var(--text-dim);
   font-size: clamp(0.8rem, 1.8vw, 1.1rem);
   text-transform: capitalize;
+  overflow-wrap: break-word;
 }
 
 .weather-location {
   color: var(--text-dim);
   font-size: clamp(0.7rem, 1.4vw, 0.9rem);
   margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ---------- Spotify: Now Playing ---------- */
@@ -437,8 +466,8 @@ body {
 
 .settings-btn {
   position: fixed;
-  top: clamp(8px, 2vw, 20px);
-  right: clamp(8px, 2vw, 20px);
+  top: max(clamp(8px, 2vw, 20px), env(safe-area-inset-top));
+  right: max(clamp(8px, 2vw, 20px), env(safe-area-inset-right));
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -476,6 +505,8 @@ body {
   border-radius: 22px;
   padding: 24px;
   width: min(360px, 90vw);
+  max-height: 85vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 14px;

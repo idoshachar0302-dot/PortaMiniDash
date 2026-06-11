@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#0b0b0d" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Dashboard" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <title>Desk Dashboard</title>
+    <script type="module" crossorigin src="/assets/index-BXEWkdXV.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C5r61j1_.css">
+  </head>
+  <body>
+    <div id="app">
+      <div class="dashboard">
+        <header class="panel clocks-panel">
+          <div class="clock local-clock">
+            <div class="clock-label">Local</div>
+            <div class="time" id="local-time">--:--</div>
+            <div class="date" id="local-date">Loading...</div>
+          </div>
+          <div class="clock ny-clock">
+            <div class="clock-label">
+              New York
+              <span class="market-dot" id="market-dot"></span>
+              <span class="market-status" id="market-status">--</span>
+            </div>
+            <div class="time" id="ny-time">--:--</div>
+            <div class="date" id="ny-date">--</div>
+          </div>
+        </header>
+
+        <section class="panel weather-panel" id="weather">
+          <h2 class="panel-title">Weather</h2>
+          <div class="weather-content">
+            <div class="weather-icon" id="weather-icon">--</div>
+            <div class="weather-info">
+              <div class="weather-temp" id="weather-temp">--&deg;</div>
+              <div class="weather-desc" id="weather-desc">Loading...</div>
+              <div class="weather-location" id="weather-location">--</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel spotify-panel" id="now-playing">
+          <div class="np-now">
+            <div class="album-art" id="album-art"></div>
+            <div class="track-title" id="track-title">Nothing playing</div>
+            <div class="track-artist" id="track-artist">Connect Spotify in settings</div>
+          </div>
+
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+          <div class="progress-time">
+            <span id="progress-current">0:00</span> / <span id="progress-total">0:00</span>
+          </div>
+
+          <div class="np-controls">
+            <button class="control-btn" id="prev-btn" aria-label="Previous track" disabled>⏮</button>
+            <button class="control-btn control-btn-main" id="play-pause-btn" aria-label="Play or pause" disabled>▶</button>
+            <button class="control-btn" id="next-btn" aria-label="Next track" disabled>⏭</button>
+          </div>
+
+          <div class="queue-section">
+            <h3 class="section-label">Up Next</h3>
+            <ul class="queue-list" id="queue-list">
+              <li class="queue-empty">No queue data yet</li>
+            </ul>
+          </div>
+        </section>
+      </div>
+
+      <button class="settings-btn" id="settings-btn" aria-label="Settings">&#9881;</button>
+
+      <div class="settings-overlay" id="settings-overlay" hidden>
+        <div class="settings-card">
+          <h2>Settings</h2>
+
+          <div class="setting-row">
+            <span>Spotify</span>
+            <button class="action-btn" id="spotify-connect-btn">Connect Spotify</button>
+          </div>
+          <div class="status-text" id="spotify-status">Not connected</div>
+
+          <div class="setting-row">
+            <span>Location</span>
+            <span class="status-text" id="location-status">Requesting...</span>
+          </div>
+
+          <button class="action-btn close-btn" id="settings-close-btn">Close</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
