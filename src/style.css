@@ -591,8 +591,8 @@ body {
   }
 
   .album-art {
-    width: clamp(90px, min(30vw, 28vh), 180px);
-    height: clamp(90px, min(30vw, 28vh), 180px);
+    width: clamp(100px, min(36vw, 34vh), 230px);
+    height: clamp(100px, min(36vw, 34vh), 230px);
   }
 
   .progress-bar {
