@@ -1,0 +1,11 @@
+{
+	"appId": "com.deskdashboard.app",
+	"appName": "Desk Dashboard",
+	"webDir": "dist",
+	"packageClassList": [
+		"AppPlugin",
+		"CAPBrowserPlugin",
+		"GeolocationPlugin",
+		"PreferencesPlugin"
+	]
+}
