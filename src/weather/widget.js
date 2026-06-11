@@ -94,7 +94,7 @@ function renderForecastSvg(days) {
   const dayLabels = points
     .map(
       (p) =>
-        `<text x="${p.x.toFixed(1)}" y="${FORECAST_VIEWBOX_H - 4}" text-anchor="middle" class="forecast-label">${dayShortFmt.format(p.day.date)}</text>`,
+        `<text x="${p.x.toFixed(1)}" y="66" text-anchor="middle" class="forecast-label">${dayShortFmt.format(p.day.date)}</text>`,
     )
     .join('');
 

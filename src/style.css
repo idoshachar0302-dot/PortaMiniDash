@@ -163,9 +163,17 @@ body {
   line-height: 1.1;
 }
 
+.local-clock .time {
+  font-size: clamp(2.2rem, min(8vw, 8.5vh), 4.4rem);
+}
+
 .clock .date {
   font-size: clamp(0.75rem, 1.6vw, 1.1rem);
   color: var(--text-dim);
+}
+
+.ny-clock .date {
+  text-align: center;
 }
 
 .clock .clock-label {
@@ -264,7 +272,7 @@ body {
 }
 
 .forecast-label {
-  font-size: 6px;
+  font-size: 8px;
   fill: var(--text-dim);
   font-family: inherit;
 }
@@ -720,8 +728,17 @@ body {
     height: clamp(70px, 28vh, 130px);
   }
 
+  .volume-row {
+    margin-bottom: clamp(2px, 0.6vh, 6px);
+  }
+
+  .volume-slider {
+    height: 14px;
+  }
+
   .np-now {
     gap: clamp(2px, 0.5vw, 5px);
+    margin-bottom: clamp(4px, 1vh, 10px);
   }
 
   .control-btn {
@@ -731,7 +748,7 @@ body {
   }
 
   .spotify-panel {
-    --album-size: clamp(100px, min(44vw, 42vh), 290px);
+    --album-size: clamp(100px, min(44vw, 38vh), 290px);
   }
 
   .progress-bar {

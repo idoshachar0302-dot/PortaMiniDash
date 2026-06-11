@@ -56,7 +56,7 @@ export function initClock() {
 
     els.localTime.textContent = localTimeFmt.format(now);
     els.localDate.textContent = localDateFmt.format(now);
-    els.nyTime.textContent = `${nyTimeFmt.format(now)} ET`;
+    els.nyTime.textContent = nyTimeFmt.format(now);
     els.nyDate.textContent = nyDateFmt.format(now);
 
     const status = getMarketStatus(now);
