@@ -626,7 +626,7 @@ body {
   }
 
   .queue-art {
-    width: clamp(28px, 6vw, 40px);
-    height: clamp(28px, 6vw, 40px);
+    width: clamp(32px, 7vw, 48px);
+    height: clamp(32px, 7vw, 48px);
   }
 }
