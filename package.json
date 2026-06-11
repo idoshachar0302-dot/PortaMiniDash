@@ -29,7 +29,7 @@
   },
   "build": {
     "appId": "com.deskdashboard.app",
-    "productName": "Desk Dashboard",
+    "productName": "Playa",
     "files": [
       "dist/**/*",
       "electron/**/*",

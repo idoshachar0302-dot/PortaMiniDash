@@ -1,6 +1,6 @@
 {
-  "name": "Desk Dashboard",
-  "short_name": "Dashboard",
+  "name": "Playa",
+  "short_name": "Playa",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0b0b0d",
