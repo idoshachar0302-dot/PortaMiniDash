@@ -574,7 +574,7 @@ body {
     grid-template-areas:
       "clocks  spotify"
       "weather spotify";
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
     grid-template-rows: minmax(0, 1.3fr) minmax(0, 1fr);
   }
 
@@ -590,26 +590,9 @@ body {
     font-size: clamp(1.2rem, 4vh, 2.4rem);
   }
 
-  .spotify-panel {
-    flex-direction: row;
-    align-items: stretch;
-    gap: clamp(10px, 2vw, 24px);
-  }
-
   .album-art {
-    width: clamp(70px, min(20vw, 26vh), 160px);
-    height: clamp(70px, min(20vw, 26vh), 160px);
-  }
-
-  .np-now {
-    flex: 0 0 auto;
-    width: auto;
-    margin-bottom: 0;
-  }
-
-  .np-details {
-    flex: 1 1 0;
-    justify-content: center;
+    width: clamp(90px, min(30vw, 28vh), 180px);
+    height: clamp(90px, min(30vw, 28vh), 180px);
   }
 
   .progress-bar {
@@ -626,6 +609,10 @@ body {
 
   .queue-list {
     gap: clamp(3px, 0.6vh, 8px);
+  }
+
+  .queue-list li:nth-child(n + 2) {
+    display: none;
   }
 
   .queue-art {
