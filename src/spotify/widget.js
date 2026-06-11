@@ -2,7 +2,7 @@ import { Browser } from '@capacitor/browser';
 import { isConnected, startAuth, disconnect, handleAuthCode, getWebRedirectParams } from './auth.js';
 import { getCurrentlyPlaying, getQueue, play, pause, skipToNext, skipToPrevious, playTrackUri } from './api.js';
 import { config } from '../config.js';
-import { isElectron, isCapacitor } from '../lib/platform.js';
+import { isCapacitor } from '../lib/platform.js';
 import { setMarqueeText } from '../lib/marquee.js';
 import { ICON_PLAY, ICON_PAUSE } from '../lib/icons.js';
 
@@ -223,10 +223,6 @@ export function initSpotify() {
       hasError = true;
       els.status.textContent = err.message || 'Connection error';
     }
-  }
-
-  if (isElectron() && window.electronAPI) {
-    window.electronAPI.onSpotifyAuthCode(({ code, state }) => onAuthCode(code, state));
   }
 
   if (isCapacitor()) {

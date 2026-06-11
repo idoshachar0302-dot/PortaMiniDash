@@ -23,8 +23,6 @@ const SESSION_KEYS = {
 
 export function getRedirectUri() {
   switch (getPlatform()) {
-    case 'electron':
-      return 'http://127.0.0.1:8888/callback';
     case 'capacitor':
       return 'deskdash://callback';
     default:
@@ -57,9 +55,7 @@ export async function startAuth() {
   const authUrl = `${AUTHORIZE_URL}?${params.toString()}`;
   const platform = getPlatform();
 
-  if (platform === 'electron' && window.electronAPI) {
-    window.electronAPI.openExternal(authUrl);
-  } else if (platform === 'capacitor') {
+  if (platform === 'capacitor') {
     await Browser.open({ url: authUrl });
   } else {
     window.location.href = authUrl;
@@ -99,7 +95,7 @@ async function exchangeCodeForTokens(code, codeVerifier) {
 }
 
 // Called once we have ?code=&state= from a redirect, regardless of how it arrived
-// (web /callback page, Electron loopback server, or Capacitor deep link).
+// (web /callback page or Capacitor deep link).
 export async function handleAuthCode(code, state) {
   const expectedState = sessionStorage.getItem(SESSION_KEYS.state);
   const codeVerifier = sessionStorage.getItem(SESSION_KEYS.codeVerifier);
@@ -115,7 +111,7 @@ export async function handleAuthCode(code, state) {
 
 // Web only: on page load, check for ?code=&state= left by Spotify's redirect to /callback.
 // Returns the code/state pair (and clears it from the URL) so the caller can run it
-// through the same error handling as the Electron/Capacitor auth flows.
+// through the same error handling as the Capacitor auth flow.
 export function getWebRedirectParams() {
   if (getPlatform() !== 'web') return null;
 
