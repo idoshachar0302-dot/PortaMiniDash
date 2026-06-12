@@ -38,66 +38,39 @@ body {
   -webkit-user-select: none;
   user-select: none;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Always render as a 19.5:9 landscape box, letterboxed/pillarboxed against
+   the body background on any other screen shape (e.g. older iPhones, iPad,
+   desktop browser windows). */
 #app {
-  height: 100vh;
-  height: 100dvh;
-  width: 100vw;
+  width: min(100vw, calc(100dvh * 19.5 / 9));
+  height: min(100dvh, calc(100vw * 9 / 19.5));
   padding: max(clamp(8px, 2vw, 24px), env(safe-area-inset-top))
     max(clamp(8px, 2vw, 24px), env(safe-area-inset-right))
     max(clamp(8px, 2vw, 24px), env(safe-area-inset-bottom))
     max(clamp(8px, 2vw, 24px), env(safe-area-inset-left));
+  container-type: size;
 }
 
 /* ---------- Layout ---------- */
 
+/* Clocks + weather stacked on the left (~2/3), Spotify panel spans both
+   rows on the right (~1/3) — the dashboard is always landscape-shaped since
+   #app is locked to a 19.5:9 aspect ratio. */
 .dashboard {
   display: grid;
   height: 100%;
   width: 100%;
-  gap: clamp(10px, 1.6vw, 20px);
-}
-
-/* Portrait (phone): Spotify on top, clocks + weather stacked below */
-@media (orientation: portrait) {
-  .dashboard {
-    grid-template-areas:
-      "spotify"
-      "clocks"
-      "weather";
-    grid-template-columns: 1fr;
-    grid-template-rows: minmax(0, 2.2fr) minmax(0, auto) minmax(0, auto);
-    gap: clamp(8px, 1.6vw, 14px);
-  }
-
-  .clocks-panel {
-    flex-direction: row;
-  }
-
-  .panel {
-    padding: clamp(10px, 3vw, 18px);
-  }
-
-  .spotify-panel {
-    --album-size: clamp(70px, 20vw, 120px);
-  }
-
-  .album-art {
-    margin-bottom: clamp(6px, 1.2vh, 12px);
-  }
-
-  .queue-section {
-    margin-top: clamp(6px, 1vh, 12px);
-  }
-
-  .queue-list li:nth-child(n + 2) {
-    display: none;
-  }
-
-  .weather-forecast {
-    height: clamp(40px, 8vh, 70px);
-  }
+  gap: clamp(10px, 1.6cqw, 20px);
+  grid-template-areas:
+    "clocks  spotify"
+    "weather spotify";
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1.3fr) minmax(0, 1fr);
 }
 
 .clocks-panel {
@@ -105,7 +78,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: clamp(8px, 2vw, 24px);
+  gap: clamp(8px, 2cqw, 24px);
   min-height: 0;
 }
 
@@ -117,7 +90,7 @@ body {
 .spotify-panel {
   grid-area: spotify;
   min-height: 0;
-  --album-size: clamp(110px, 22vw, 200px);
+  --album-size: clamp(100px, min(44cqw, 38cqh), 290px);
 }
 
 /* ---------- Panels ---------- */
@@ -126,7 +99,7 @@ body {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 24px;
-  padding: clamp(14px, 1.8vw, 26px);
+  padding: clamp(14px, 1.8cqw, 26px);
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -137,7 +110,7 @@ body {
 
 .panel-title {
   margin: 0 0 8px;
-  font-size: clamp(0.7rem, 1.4vw, 1rem);
+  font-size: clamp(0.7rem, 1.4cqw, 1rem);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -156,7 +129,7 @@ body {
 }
 
 .clock .time {
-  font-size: clamp(1.8rem, min(6.5vw, 7vh), 3.6rem);
+  font-size: clamp(1.8rem, min(6.5cqw, 7cqh), 3.6rem);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
@@ -164,11 +137,11 @@ body {
 }
 
 .local-clock .time {
-  font-size: clamp(2.2rem, min(8vw, 8.5vh), 4.4rem);
+  font-size: clamp(2.2rem, min(8cqw, 8.5cqh), 4.4rem);
 }
 
 .clock .date {
-  font-size: clamp(0.75rem, 1.6vw, 1.1rem);
+  font-size: clamp(0.75rem, 1.6cqw, 1.1rem);
   color: var(--text-dim);
 }
 
@@ -177,7 +150,7 @@ body {
 }
 
 .clock .clock-label {
-  font-size: clamp(0.7rem, 1.4vw, 1rem);
+  font-size: clamp(0.7rem, 1.4cqw, 1rem);
   color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -212,13 +185,13 @@ body {
 .weather-content {
   display: flex;
   align-items: center;
-  gap: clamp(10px, 2vw, 20px);
+  gap: clamp(8px, 1.5cqw, 16px);
   flex: 1;
   min-width: 0;
 }
 
 .weather-icon {
-  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-size: clamp(1.6rem, 5cqh, 3.5rem);
   flex: 0 0 auto;
 }
 
@@ -227,21 +200,21 @@ body {
 }
 
 .weather-temp {
-  font-size: clamp(1.4rem, 4vw, 2.4rem);
+  font-size: clamp(1.2rem, 4cqh, 2.4rem);
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 
 .weather-desc {
   color: var(--text-dim);
-  font-size: clamp(0.8rem, 1.8vw, 1.1rem);
+  font-size: clamp(0.8rem, 1.8cqw, 1.1rem);
   text-transform: capitalize;
   overflow-wrap: break-word;
 }
 
 .weather-location {
   color: var(--text-dim);
-  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
+  font-size: clamp(0.7rem, 1.4cqw, 0.9rem);
   margin-top: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -250,7 +223,7 @@ body {
 
 .weather-date {
   color: var(--text-dim);
-  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
+  font-size: clamp(0.7rem, 1.4cqw, 0.9rem);
   margin-top: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -260,7 +233,7 @@ body {
 .weather-forecast {
   flex: 1;
   min-width: 0;
-  height: clamp(50px, 10vh, 90px);
+  height: clamp(70px, 28cqh, 130px);
   display: flex;
   align-items: stretch;
 }
@@ -290,14 +263,14 @@ body {
   display: flex;
   justify-content: center;
   width: 100%;
-  margin-top: clamp(6px, 1.2vh, 12px);
+  margin-top: clamp(2px, 0.6cqh, 6px);
 }
 
 .volume-slider {
   -webkit-appearance: none;
   appearance: none;
   width: var(--album-size);
-  height: 18px;
+  height: 14px;
   background: transparent;
   cursor: pointer;
 }
@@ -361,10 +334,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(2px, 0.6vw, 6px);
+  gap: clamp(2px, 0.5cqw, 5px);
   width: 100%;
   min-width: 0;
-  margin-bottom: clamp(8px, 1.4vh, 16px);
+  margin-bottom: clamp(4px, 1cqh, 10px);
 }
 
 .np-side-btn {
@@ -401,12 +374,12 @@ body {
   position: absolute;
   inset: 0;
   margin: auto;
-  width: clamp(2rem, 6vw, 3rem);
-  height: clamp(2rem, 6vw, 3rem);
+  width: clamp(2rem, 6cqw, 3rem);
+  height: clamp(2rem, 6cqw, 3rem);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(1rem, 3vw, 1.5rem);
+  font-size: clamp(1rem, 3cqw, 1.5rem);
   color: #fff;
   background: rgba(0, 0, 0, 0.45);
   border-radius: 50%;
@@ -429,7 +402,7 @@ body {
 
 .track-title {
   width: 100%;
-  font-size: clamp(1rem, 2.2vw, 1.4rem);
+  font-size: clamp(1rem, 2.2cqw, 1.4rem);
   font-weight: 700;
   letter-spacing: -0.01em;
   overflow: hidden;
@@ -440,7 +413,7 @@ body {
 
 .track-artist {
   width: 100%;
-  font-size: clamp(0.8rem, 1.6vw, 1.05rem);
+  font-size: clamp(0.8rem, 1.6cqw, 1.05rem);
   color: var(--text-dim);
   white-space: nowrap;
   overflow: hidden;
@@ -482,7 +455,7 @@ body {
   border-radius: 3px;
   background: rgba(255, 255, 255, 0.12);
   overflow: hidden;
-  margin-top: clamp(10px, 1.6vh, 18px);
+  margin-top: clamp(6px, 1.2cqh, 14px);
 }
 
 .progress-fill {
@@ -496,7 +469,7 @@ body {
 .progress-time {
   width: 100%;
   margin-top: 6px;
-  font-size: clamp(0.7rem, 1.4vw, 0.85rem);
+  font-size: clamp(0.7rem, 1.4cqw, 0.85rem);
   color: var(--text-dim);
   font-variant-numeric: tabular-nums;
   display: flex;
@@ -509,10 +482,10 @@ body {
   border: none;
   background: transparent;
   color: var(--text);
-  font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+  font-size: clamp(0.9rem, 2cqw, 1.2rem);
   line-height: 1;
-  width: clamp(2.2rem, 5vw, 2.8rem);
-  height: clamp(2.2rem, 5vw, 2.8rem);
+  width: clamp(1.6rem, 4cqw, 2.2rem);
+  height: clamp(1.6rem, 4cqw, 2.2rem);
   cursor: pointer;
   border-radius: 50%;
   display: flex;
@@ -542,7 +515,7 @@ body {
 
 .queue-section {
   width: 100%;
-  margin-top: clamp(12px, 2vh, 22px);
+  margin-top: clamp(3px, 0.6cqh, 8px);
   min-height: 0;
   overflow: hidden;
   display: flex;
@@ -550,8 +523,8 @@ body {
 }
 
 .section-label {
-  margin: 0 0 10px;
-  font-size: clamp(0.65rem, 1.2vw, 0.8rem);
+  margin: 0 0 4px;
+  font-size: clamp(0.65rem, 1.2cqw, 0.8rem);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -564,8 +537,12 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: clamp(6px, 1.2vh, 12px);
+  gap: clamp(3px, 0.6cqh, 8px);
   overflow: hidden;
+}
+
+.queue-list li:nth-child(n + 2) {
+  display: none;
 }
 
 .queue-list li.queue-track {
@@ -586,8 +563,8 @@ body {
 
 .queue-art {
   flex: 0 0 auto;
-  width: clamp(38px, 7vw, 52px);
-  height: clamp(38px, 7vw, 52px);
+  width: clamp(32px, 7cqw, 48px);
+  height: clamp(32px, 7cqw, 48px);
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.08) center / cover no-repeat;
 }
@@ -598,7 +575,7 @@ body {
 }
 
 .queue-title {
-  font-size: clamp(0.8rem, 1.6vw, 1rem);
+  font-size: clamp(0.8rem, 1.6cqw, 1rem);
   font-weight: 600;
   overflow: hidden;
   white-space: nowrap;
@@ -606,7 +583,7 @@ body {
 }
 
 .queue-artist {
-  font-size: clamp(0.7rem, 1.3vw, 0.85rem);
+  font-size: clamp(0.7rem, 1.3cqw, 0.85rem);
   color: var(--text-dim);
   overflow: hidden;
   white-space: nowrap;
@@ -615,15 +592,15 @@ body {
 
 .queue-empty {
   color: var(--text-dim);
-  font-size: clamp(0.8rem, 1.6vw, 1rem);
+  font-size: clamp(0.8rem, 1.6cqw, 1rem);
 }
 
 /* ---------- Settings ---------- */
 
 .settings-btn {
   position: fixed;
-  top: max(clamp(8px, 2vw, 20px), env(safe-area-inset-top));
-  right: max(clamp(8px, 2vw, 20px), env(safe-area-inset-right));
+  top: max(clamp(8px, 2cqw, 20px), env(safe-area-inset-top));
+  right: max(clamp(8px, 2cqw, 20px), env(safe-area-inset-right));
   width: 44px;
   height: 44px;
   border: none;
@@ -657,8 +634,8 @@ body {
   border: 1px solid var(--card-border);
   border-radius: 22px;
   padding: 24px;
-  width: min(360px, 90vw);
-  max-height: 85vh;
+  width: min(360px, 90cqw);
+  max-height: 85cqh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -699,80 +676,4 @@ body {
 .status-text {
   color: var(--text-dim);
   font-size: 0.9rem;
-}
-
-/* Landscape (small monitor): clocks + weather stacked on the left (~2/3),
-   Spotify panel spans both rows on the right (~1/3) */
-@media (orientation: landscape) {
-  .dashboard {
-    grid-template-areas:
-      "clocks  spotify"
-      "weather spotify";
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1.3fr) minmax(0, 1fr);
-  }
-
-  .weather-content {
-    gap: clamp(8px, 1.5vw, 16px);
-  }
-
-  .weather-icon {
-    font-size: clamp(1.6rem, 5vh, 3.5rem);
-  }
-
-  .weather-temp {
-    font-size: clamp(1.2rem, 4vh, 2.4rem);
-  }
-
-  .weather-forecast {
-    height: clamp(70px, 28vh, 130px);
-  }
-
-  .volume-row {
-    margin-top: clamp(2px, 0.6vh, 6px);
-  }
-
-  .volume-slider {
-    height: 14px;
-  }
-
-  .np-now {
-    gap: clamp(2px, 0.5vw, 5px);
-    margin-bottom: clamp(4px, 1vh, 10px);
-  }
-
-  .control-btn {
-    width: clamp(1.6rem, 4vw, 2.2rem);
-    height: clamp(1.6rem, 4vw, 2.2rem);
-    font-size: clamp(0.9rem, 2vw, 1.2rem);
-  }
-
-  .spotify-panel {
-    --album-size: clamp(100px, min(44vw, 38vh), 290px);
-  }
-
-  .progress-bar {
-    margin-top: clamp(6px, 1.2vh, 14px);
-  }
-
-  .queue-section {
-    margin-top: clamp(3px, 0.6vh, 8px);
-  }
-
-  .section-label {
-    margin-bottom: 4px;
-  }
-
-  .queue-list {
-    gap: clamp(3px, 0.6vh, 8px);
-  }
-
-  .queue-list li:nth-child(n + 2) {
-    display: none;
-  }
-
-  .queue-art {
-    width: clamp(32px, 7vw, 48px);
-    height: clamp(32px, 7vw, 48px);
-  }
 }
