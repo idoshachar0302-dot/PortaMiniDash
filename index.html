@@ -46,10 +46,6 @@
         </section>
 
         <section class="panel spotify-panel" id="now-playing">
-          <div class="volume-row">
-            <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="50" step="1" aria-label="Volume" disabled />
-          </div>
-
           <div class="np-now">
             <button class="control-btn np-side-btn" id="prev-btn" aria-label="Previous track" disabled><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4a1 1 0 0 1 1 1v14a1 1 0 0 1-2 0V5a1 1 0 0 1 1-1Z"/><path d="M19.5 5.13a1 1 0 0 1 .5.87v12a1 1 0 0 1-1.55.83l-9-6a1 1 0 0 1 0-1.66l9-6a1 1 0 0 1 1.05-.04Z"/></svg></button>
 
@@ -77,6 +73,10 @@
                 <li class="queue-empty">No queue data yet</li>
               </ul>
             </div>
+          </div>
+
+          <div class="volume-row">
+            <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="50" step="1" aria-label="Volume" disabled />
           </div>
         </section>
       </div>

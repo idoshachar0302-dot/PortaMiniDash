@@ -290,7 +290,7 @@ body {
   display: flex;
   justify-content: center;
   width: 100%;
-  margin-bottom: clamp(6px, 1.2vh, 12px);
+  margin-top: clamp(6px, 1.2vh, 12px);
 }
 
 .volume-slider {
@@ -729,7 +729,7 @@ body {
   }
 
   .volume-row {
-    margin-bottom: clamp(2px, 0.6vh, 6px);
+    margin-top: clamp(2px, 0.6vh, 6px);
   }
 
   .volume-slider {
