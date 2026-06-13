@@ -138,6 +138,7 @@ export function initSpotify() {
   let hasError = false;
   let isBusy = false;
   let isPolling = false;
+  let pollCooldownUntil = 0;
 
   function setControlsEnabled(enabled) {
     els.prevBtn.disabled = !enabled;
@@ -180,6 +181,11 @@ export function initSpotify() {
     const connected = await isConnected();
     if (!connected) return;
 
+    // Spotify told us via Retry-After to back off; skip ticks until that
+    // cooldown elapses instead of hammering the same rate-limited endpoint
+    // every POLL_MS.
+    if (Date.now() < pollCooldownUntil) return;
+
     // Polling on 429s retries with backoff inside spotifyFetch, which can take
     // a while. Without this guard, the setInterval below would keep firing
     // every POLL_MS and pile up overlapping retrying requests, making any
@@ -200,7 +206,12 @@ export function initSpotify() {
     } catch (err) {
       console.error('Spotify poll failed', err);
       hasError = true;
-      els.status.textContent = err.message || 'Connection error';
+      if (err.retryAfterSec) {
+        pollCooldownUntil = Date.now() + err.retryAfterSec * 1000;
+        els.status.textContent = `Rate limited, retrying in ${err.retryAfterSec}s`;
+      } else {
+        els.status.textContent = err.message || 'Connection error';
+      }
     } finally {
       isPolling = false;
     }

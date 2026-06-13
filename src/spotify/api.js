@@ -24,9 +24,15 @@ async function spotifyFetch(path, options = {}, attempt = 0) {
   if (res.status === 204) return null; // nothing playing / empty queue / command accepted with no body
 
   if (res.status === 429) {
-    if (attempt >= maxRetries) throw new Error('Spotify API error: rate limited, please try again later');
+    // Fall back to a conservative cooldown if Spotify doesn't send Retry-After
+    // — a 1s default would defeat the purpose of backing off.
+    const retryAfterSec = Number(res.headers.get('Retry-After')) || 30;
+    if (attempt >= maxRetries) {
+      const err = new Error('Spotify API error: rate limited, please try again later');
+      err.retryAfterSec = retryAfterSec;
+      throw err;
+    }
     // Respect Retry-After (seconds) and back off further on repeated 429s.
-    const retryAfterSec = Number(res.headers.get('Retry-After')) || 1;
     await sleep(retryAfterSec * 1000 * 2 ** attempt);
     return spotifyFetch(path, options, attempt + 1);
   }
