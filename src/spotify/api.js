@@ -8,6 +8,7 @@ function sleep(ms) {
 }
 
 async function spotifyFetch(path, options = {}, attempt = 0) {
+  const maxRetries = options.maxRetries ?? MAX_RETRIES;
   const token = await getAccessToken();
   if (!token) return null;
 
@@ -23,7 +24,7 @@ async function spotifyFetch(path, options = {}, attempt = 0) {
   if (res.status === 204) return null; // nothing playing / empty queue / command accepted with no body
 
   if (res.status === 429) {
-    if (attempt >= MAX_RETRIES) throw new Error('Spotify API error: rate limited, please try again later');
+    if (attempt >= maxRetries) throw new Error('Spotify API error: rate limited, please try again later');
     // Respect Retry-After (seconds) and back off further on repeated 429s.
     const retryAfterSec = Number(res.headers.get('Retry-After')) || 1;
     await sleep(retryAfterSec * 1000 * 2 ** attempt);
@@ -39,12 +40,15 @@ async function spotifyFetch(path, options = {}, attempt = 0) {
   return res.json();
 }
 
+// The dashboard polls these every few seconds, so on a 429 it's better to fail
+// fast and let the next poll act as the retry than to block this poll for a
+// possibly-long exponential backoff.
 export function getCurrentlyPlaying() {
-  return spotifyFetch('/me/player/currently-playing');
+  return spotifyFetch('/me/player/currently-playing', { maxRetries: 0 });
 }
 
 export function getQueue() {
-  return spotifyFetch('/me/player/queue');
+  return spotifyFetch('/me/player/queue', { maxRetries: 0 });
 }
 
 export function play() {

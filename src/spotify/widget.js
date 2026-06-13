@@ -137,6 +137,7 @@ export function initSpotify() {
 
   let hasError = false;
   let isBusy = false;
+  let isPolling = false;
 
   function setControlsEnabled(enabled) {
     els.prevBtn.disabled = !enabled;
@@ -179,6 +180,13 @@ export function initSpotify() {
     const connected = await isConnected();
     if (!connected) return;
 
+    // Polling on 429s retries with backoff inside spotifyFetch, which can take
+    // a while. Without this guard, the setInterval below would keep firing
+    // every POLL_MS and pile up overlapping retrying requests, making any
+    // rate limit worse and never letting it recover.
+    if (isPolling) return;
+    isPolling = true;
+
     try {
       const requestStart = performance.now();
       const nowPlaying = await getCurrentlyPlaying();
@@ -193,6 +201,8 @@ export function initSpotify() {
       console.error('Spotify poll failed', err);
       hasError = true;
       els.status.textContent = err.message || 'Connection error';
+    } finally {
+      isPolling = false;
     }
   }
 
@@ -252,6 +262,10 @@ export function initSpotify() {
       console.error('Spotify auth failed', err);
       hasError = true;
       els.status.textContent = err.message || 'Connection error';
+      // Reflect whatever actually got stored (e.g. tokens persisted but the
+      // immediate poll/refresh failed), so the button doesn't get stuck on
+      // "Connect Spotify" after a successful login.
+      await refreshConnectionUI();
     }
   }
 
