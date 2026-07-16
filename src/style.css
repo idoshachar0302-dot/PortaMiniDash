@@ -139,7 +139,7 @@ body {
 }
 
 .local-clock .time {
-  font-size: clamp(5.6rem, min(21cqw, 23cqh), 11.6rem);
+  font-size: clamp(4.8rem, min(18cqw, 20cqh), 10rem);
 }
 
 .clock .date {

@@ -1,4 +1,6 @@
-const localTimeFmt = new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' });
+// en-US forces the same 12-hour AM/PM format as the NY clock regardless of
+// the device's locale.
+const localTimeFmt = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit' });
 const localDateFmt = new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
 const nyTimeFmt = new Intl.DateTimeFormat('en-US', {
   timeZone: 'America/New_York',
