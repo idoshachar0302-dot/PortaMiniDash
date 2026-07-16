@@ -75,6 +75,8 @@ body {
 
 .clocks-panel {
   grid-area: clocks;
+  /* Anchor for the absolutely positioned settings button. */
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -597,10 +599,12 @@ body {
 
 /* ---------- Settings ---------- */
 
+/* Pinned to the top-left corner of the clocks panel so it stays put relative
+   to the dashboard regardless of how the 19.5:9 box is letterboxed. */
 .settings-btn {
-  position: fixed;
-  top: max(clamp(8px, 2cqw, 20px), env(safe-area-inset-top));
-  right: max(clamp(8px, 2cqw, 20px), env(safe-area-inset-right));
+  position: absolute;
+  top: 8px;
+  left: 8px;
   width: 44px;
   height: 44px;
   border: none;
