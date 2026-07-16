@@ -2,6 +2,9 @@ import { getAccessToken } from './auth.js';
 
 const BASE_URL = 'https://api.spotify.com/v1';
 const MAX_RETRIES = 3;
+// Spotify can send day-scale Retry-After values once an app exhausts its daily
+// quota; honoring those verbatim would freeze the dashboard for hours.
+const MAX_RETRY_AFTER_SEC = 300;
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -10,7 +13,13 @@ function sleep(ms) {
 async function spotifyFetch(path, options = {}, attempt = 0) {
   const maxRetries = options.maxRetries ?? MAX_RETRIES;
   const token = await getAccessToken();
-  if (!token) return null;
+  if (!token) {
+    // Throw rather than return null: callers render null as "nothing playing"
+    // (Spotify's 204), which would silently mask a dead session.
+    const err = new Error('Spotify session expired — reconnect in settings');
+    err.authExpired = true;
+    throw err;
+  }
 
   const res = await fetch(`${BASE_URL}${path}`, {
     method: options.method || 'GET',
@@ -26,7 +35,7 @@ async function spotifyFetch(path, options = {}, attempt = 0) {
   if (res.status === 429) {
     // Fall back to a conservative cooldown if Spotify doesn't send Retry-After
     // — a 1s default would defeat the purpose of backing off.
-    const retryAfterSec = Number(res.headers.get('Retry-After')) || 30;
+    const retryAfterSec = Math.min(Number(res.headers.get('Retry-After')) || 30, MAX_RETRY_AFTER_SEC);
     if (attempt >= maxRetries) {
       const err = new Error('Spotify API error: rate limited, please try again later');
       err.retryAfterSec = retryAfterSec;
@@ -46,11 +55,19 @@ async function spotifyFetch(path, options = {}, attempt = 0) {
   return res.json();
 }
 
+// Identifies which Spotify account this session belongs to — on a shared
+// display it's easy to authorize the wrong account without noticing.
+export function getMe() {
+  return spotifyFetch('/me', { maxRetries: 0 });
+}
+
 // The dashboard polls these every few seconds, so on a 429 it's better to fail
 // fast and let the next poll act as the retry than to block this poll for a
 // possibly-long exponential backoff.
+// additional_types: without it, playing a podcast returns item: null and the
+// display would claim nothing is playing.
 export function getCurrentlyPlaying() {
-  return spotifyFetch('/me/player/currently-playing', { maxRetries: 0 });
+  return spotifyFetch('/me/player/currently-playing?additional_types=track,episode', { maxRetries: 0 });
 }
 
 export function getQueue() {

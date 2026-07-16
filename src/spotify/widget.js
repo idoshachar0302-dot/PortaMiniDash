@@ -1,6 +1,6 @@
 import { Browser } from '@capacitor/browser';
 import { isConnected, startAuth, disconnect, handleAuthCode, getWebRedirectParams } from './auth.js';
-import { getCurrentlyPlaying, getQueue, play, pause, skipToNext, skipToPrevious, playTrackUri, setVolume } from './api.js';
+import { getMe, getCurrentlyPlaying, getQueue, play, pause, skipToNext, skipToPrevious, playTrackUri, setVolume } from './api.js';
 import { config } from '../config.js';
 import { isCapacitor } from '../lib/platform.js';
 import { setMarqueeText } from '../lib/marquee.js';
@@ -17,8 +17,15 @@ function formatMs(ms) {
   return `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
-function trackArtists(track) {
-  return (track.artists || []).map((artist) => artist.name).join(', ');
+// Both handle tracks and podcast episodes: episodes have no artists/album,
+// their show name and artwork live on the item itself.
+function itemSubtitle(item) {
+  if (item.type === 'episode') return item.show?.name || 'Podcast';
+  return (item.artists || []).map((artist) => artist.name).join(', ');
+}
+
+function itemImages(item) {
+  return (item.type === 'episode' ? item.images : item.album?.images) || [];
 }
 
 export function initSpotify() {
@@ -69,7 +76,9 @@ export function initSpotify() {
     }
 
     if (!track) {
-      setMarqueeText(els.title, 'Nothing playing');
+      // A 200 with no item still tells us what's occupying the player (e.g.
+      // an ad break on a free account) — don't misreport it as idle.
+      setMarqueeText(els.title, data?.currently_playing_type === 'ad' ? 'Ad playing' : 'Nothing playing');
       els.artist.textContent = '';
       els.albumArt.style.backgroundImage = '';
       els.albumArtIcon.innerHTML = ICON_PLAY;
@@ -79,9 +88,9 @@ export function initSpotify() {
     }
 
     setMarqueeText(els.title, track.name);
-    els.artist.textContent = trackArtists(track);
+    els.artist.textContent = itemSubtitle(track);
 
-    const artUrl = track.album?.images?.[0]?.url;
+    const artUrl = itemImages(track)[0]?.url;
     els.albumArt.style.backgroundImage = artUrl ? `url("${artUrl}")` : '';
 
     const reportedProgress = data.progress_ms ?? 0;
@@ -114,7 +123,7 @@ export function initSpotify() {
 
       const art = document.createElement('div');
       art.className = 'queue-art';
-      const images = track.album?.images || [];
+      const images = itemImages(track);
       const artUrl = images[images.length - 1]?.url || images[0]?.url;
       if (artUrl) art.style.backgroundImage = `url("${artUrl}")`;
 
@@ -127,7 +136,7 @@ export function initSpotify() {
 
       const artistDiv = document.createElement('div');
       artistDiv.className = 'queue-artist';
-      artistDiv.textContent = trackArtists(track);
+      artistDiv.textContent = itemSubtitle(track);
 
       info.append(titleDiv, artistDiv);
       li.append(art, info);
@@ -139,6 +148,11 @@ export function initSpotify() {
   let isBusy = false;
   let isPolling = false;
   let pollCooldownUntil = 0;
+  let accountName = null;
+
+  function connectedLabel() {
+    return accountName ? `Connected as ${accountName}` : 'Connected';
+  }
 
   function setControlsEnabled(enabled) {
     els.prevBtn.disabled = !enabled;
@@ -162,6 +176,7 @@ export function initSpotify() {
       console.error('Spotify control failed', err);
       hasError = true;
       els.status.textContent = err.message || 'Connection error';
+      if (err.authExpired) await refreshConnectionUI();
     } finally {
       isBusy = false;
     }
@@ -171,8 +186,18 @@ export function initSpotify() {
     const connected = await isConnected();
     els.connectBtn.textContent = connected ? 'Disconnect Spotify' : 'Connect Spotify';
     setControlsEnabled(connected);
+    if (!connected) {
+      accountName = null;
+    } else if (!accountName) {
+      try {
+        const me = await getMe();
+        accountName = me?.display_name || me?.id || null;
+      } catch (err) {
+        console.error('Spotify profile fetch failed', err);
+      }
+    }
     if (!hasError) {
-      els.status.textContent = connected ? 'Connected' : 'Not connected';
+      els.status.textContent = connected ? connectedLabel() : 'Not connected';
     }
     return connected;
   }
@@ -183,8 +208,13 @@ export function initSpotify() {
 
     // Spotify told us via Retry-After to back off; skip ticks until that
     // cooldown elapses instead of hammering the same rate-limited endpoint
-    // every POLL_MS.
-    if (Date.now() < pollCooldownUntil) return;
+    // every POLL_MS. Keep the countdown visible so the skip doesn't leave a
+    // stale "Connected" on screen.
+    if (Date.now() < pollCooldownUntil) {
+      const secondsLeft = Math.ceil((pollCooldownUntil - Date.now()) / 1000);
+      els.status.textContent = `Rate limited, retrying in ${secondsLeft}s`;
+      return;
+    }
 
     // Polling on 429s retries with backoff inside spotifyFetch, which can take
     // a while. Without this guard, the setInterval below would keep firing
@@ -197,12 +227,12 @@ export function initSpotify() {
       const requestStart = performance.now();
       const nowPlaying = await getCurrentlyPlaying();
       const latencyMs = (performance.now() - requestStart) / 2;
-      const queue = await getQueue();
-
+      // Render before fetching the queue so a queue failure can't blank the
+      // now-playing panel too.
       renderNowPlaying(nowPlaying, latencyMs);
-      renderQueue(queue);
+      renderQueue(await getQueue());
       hasError = false;
-      els.status.textContent = 'Connected';
+      els.status.textContent = connectedLabel();
     } catch (err) {
       console.error('Spotify poll failed', err);
       hasError = true;
@@ -212,6 +242,10 @@ export function initSpotify() {
       } else {
         els.status.textContent = err.message || 'Connection error';
       }
+      // The session may have been wiped mid-poll (dead refresh token) — flip
+      // the button/controls back to the disconnected state instead of leaving
+      // a "Disconnect" button on a dead session.
+      if (err.authExpired) await refreshConnectionUI();
     } finally {
       isPolling = false;
     }
@@ -233,7 +267,7 @@ export function initSpotify() {
     try {
       await setVolume(Number(els.volumeSlider.value));
       hasError = false;
-      els.status.textContent = 'Connected';
+      els.status.textContent = connectedLabel();
     } catch (err) {
       console.error('Spotify volume change failed', err);
       hasError = true;

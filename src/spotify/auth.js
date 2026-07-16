@@ -145,8 +145,18 @@ async function refreshAccessToken() {
   });
 
   if (!res.ok) {
-    await disconnect();
-    return null;
+    // Only a definitive rejection (invalid/revoked refresh token) may wipe the
+    // session — a transient 429/5xx from the token endpoint must not log the
+    // user out.
+    if (res.status === 400 || res.status === 401 || res.status === 403) {
+      await disconnect();
+      return null;
+    }
+    const err = new Error(`Spotify token refresh failed (${res.status})`);
+    if (res.status === 429) {
+      err.retryAfterSec = Math.min(Number(res.headers.get('Retry-After')) || 30, 300);
+    }
+    throw err;
   }
 
   const data = await res.json();
