@@ -66,7 +66,7 @@ function aggregateDailyHighs(forecastData, daysAhead = FORECAST_DAYS_AHEAD) {
 function renderForecastSvg(days) {
   if (!days.length) return '';
 
-  const temps = days.map((d) => d.high);
+  const temps = days.map((d) => Math.round(d.high));
   const min = Math.min(...temps);
   const max = Math.max(...temps);
   const range = max - min || 1; // avoid divide-by-zero when all temps are equal
@@ -76,9 +76,9 @@ function renderForecastSvg(days) {
 
   const points = days.map((d, i) => {
     const x = FORECAST_PADDING_X + i * stepX;
-    const normalized = (d.high - min) / range;
+    const normalized = (temps[i] - min) / range;
     const y = FORECAST_GRAPH_BOTTOM - normalized * (FORECAST_GRAPH_BOTTOM - FORECAST_GRAPH_TOP);
-    return { x, y, day: d };
+    return { x, y, temp: temps[i], day: d };
   });
 
   const polylinePoints = points.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
@@ -88,7 +88,7 @@ function renderForecastSvg(days) {
   const tempLabels = points
     .map(
       (p) =>
-        `<text x="${p.x.toFixed(1)}" y="${(p.y - 6).toFixed(1)}" text-anchor="middle" class="forecast-temp-label">${Math.round(p.day.high)}°</text>`,
+        `<text x="${p.x.toFixed(1)}" y="${(p.y - 6).toFixed(1)}" text-anchor="middle" class="forecast-temp-label">${p.temp}°</text>`,
     )
     .join('');
   const dayLabels = points
