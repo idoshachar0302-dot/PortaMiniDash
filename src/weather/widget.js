@@ -130,9 +130,15 @@ export function initWeather() {
 
   let coords = null;
   let placeName = null;
+  let lastWeatherAt = 0;
+  let lastForecastAt = 0;
 
   async function refreshWeather() {
     if (!coords) return;
+    // Stamped at attempt start (not success) so a concurrent wake-up event
+    // doesn't duplicate an in-flight fetch; reset on failure so the next
+    // wake-up retries immediately.
+    lastWeatherAt = Date.now();
     try {
       const data = await fetchCurrentWeather(coords.lat, coords.lon);
       // data.timezone is the location's UTC offset in seconds — the clock
@@ -146,6 +152,7 @@ export function initWeather() {
       els.desc.textContent = weather?.description ?? '--';
       els.location.textContent = placeName || data.name || '--';
     } catch (err) {
+      lastWeatherAt = 0;
       els.desc.textContent = 'Weather unavailable';
       console.error('Weather fetch failed', err);
     }
@@ -153,11 +160,13 @@ export function initWeather() {
 
   async function refreshForecast() {
     if (!coords) return;
+    lastForecastAt = Date.now();
     try {
       const data = await fetchForecast(coords.lat, coords.lon);
       const days = aggregateDailyHighs(data);
       els.forecast.innerHTML = renderForecastSvg(days);
     } catch (err) {
+      lastForecastAt = 0;
       els.forecast.innerHTML = '';
       console.error('Forecast fetch failed', err);
     }
@@ -176,8 +185,9 @@ export function initWeather() {
       placeName = manual.name;
       els.locationStatus.textContent = manual.name;
       els.location.textContent = manual.name;
-      await refreshWeather();
-      await refreshForecast();
+      // Started together so both stamp their refresh time synchronously —
+      // a wake-up event mid-load would otherwise duplicate the second fetch.
+      await Promise.all([refreshWeather(), refreshForecast()]);
       return;
     }
 
@@ -205,14 +215,28 @@ export function initWeather() {
         console.error('Reverse geocode failed', err);
       }
 
-      await refreshWeather();
-      await refreshForecast();
+      await Promise.all([refreshWeather(), refreshForecast()]);
     } catch (err) {
       els.locationStatus.textContent = 'Unavailable';
       els.desc.textContent = 'Location unavailable';
       console.error('Geolocation failed', err);
     }
   }
+
+  // Interval ticks are throttled or suspended entirely while the tab is
+  // hidden or the device screen is off (kiosk displays especially), so data
+  // can sit stale long after wake-up — the forecast for up to 30 minutes.
+  // Refetch anything past its refresh window the moment the page becomes
+  // visible/focused again or the network comes back.
+  function refreshIfStale() {
+    if (document.visibilityState === 'hidden' || !coords) return;
+    if (Date.now() - lastWeatherAt >= WEATHER_REFRESH_MS) refreshWeather();
+    if (Date.now() - lastForecastAt >= FORECAST_REFRESH_MS) refreshForecast();
+  }
+  document.addEventListener('visibilitychange', refreshIfStale);
+  window.addEventListener('pageshow', refreshIfStale);
+  window.addEventListener('focus', refreshIfStale);
+  window.addEventListener('online', refreshIfStale);
 
   refreshLocation();
   onLocationSettingsChange(refreshLocation);
