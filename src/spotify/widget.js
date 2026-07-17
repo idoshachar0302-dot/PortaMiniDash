@@ -1,8 +1,6 @@
-import { Browser } from '@capacitor/browser';
 import { isConnected, startAuth, disconnect, handleAuthCode, getWebRedirectParams } from './auth.js';
 import { getMe, getCurrentlyPlaying, getQueue, play, pause, skipToNext, skipToPrevious, playTrackUri, setVolume } from './api.js';
 import { config } from '../config.js';
-import { isCapacitor } from '../lib/platform.js';
 import { setMarqueeText } from '../lib/marquee.js';
 import { ICON_PLAY, ICON_PAUSE } from '../lib/icons.js';
 
@@ -312,20 +310,6 @@ export function initSpotify() {
       // "Connect Spotify" after a successful login.
       await refreshConnectionUI();
     }
-  }
-
-  if (isCapacitor()) {
-    import('@capacitor/app').then(({ App }) => {
-      App.addListener('appUrlOpen', async ({ url }) => {
-        const params = new URL(url).searchParams;
-        const code = params.get('code');
-        const state = params.get('state');
-        if (!code) return;
-
-        await Browser.close();
-        await onAuthCode(code, state);
-      });
-    });
   }
 
   (async () => {

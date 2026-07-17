@@ -1,8 +1,6 @@
-import { Browser } from '@capacitor/browser';
 import { config } from '../config.js';
 import { generateRandomString, generateCodeChallenge } from '../lib/pkce.js';
 import { getItem, setItem, removeItem } from '../lib/storage.js';
-import { getPlatform } from '../lib/platform.js';
 
 const AUTHORIZE_URL = 'https://accounts.spotify.com/authorize';
 const TOKEN_URL = 'https://accounts.spotify.com/api/token';
@@ -14,20 +12,15 @@ const KEYS = {
   expiresAt: 'spotify_expires_at',
 };
 
-// PKCE verifier/state are short-lived, so sessionStorage is fine even on native
-// (the auth flow happens in a single app session).
+// PKCE verifier/state are short-lived, so sessionStorage is fine
+// (the auth flow happens in a single browser session).
 const SESSION_KEYS = {
   codeVerifier: 'spotify_pkce_verifier',
   state: 'spotify_pkce_state',
 };
 
 export function getRedirectUri() {
-  switch (getPlatform()) {
-    case 'capacitor':
-      return 'deskdash://callback';
-    default:
-      return `${window.location.origin}/callback`;
-  }
+  return `${window.location.origin}/callback`;
 }
 
 export async function isConnected() {
@@ -56,14 +49,7 @@ export async function startAuth() {
     show_dialog: 'true',
   });
 
-  const authUrl = `${AUTHORIZE_URL}?${params.toString()}`;
-  const platform = getPlatform();
-
-  if (platform === 'capacitor') {
-    await Browser.open({ url: authUrl });
-  } else {
-    window.location.href = authUrl;
-  }
+  window.location.href = `${AUTHORIZE_URL}?${params.toString()}`;
 }
 
 async function storeTokens(data) {
@@ -98,8 +84,7 @@ async function exchangeCodeForTokens(code, codeVerifier) {
   await storeTokens(await res.json());
 }
 
-// Called once we have ?code=&state= from a redirect, regardless of how it arrived
-// (web /callback page or Capacitor deep link).
+// Called once we have ?code=&state= from Spotify's redirect to /callback.
 export async function handleAuthCode(code, state) {
   const expectedState = sessionStorage.getItem(SESSION_KEYS.state);
   const codeVerifier = sessionStorage.getItem(SESSION_KEYS.codeVerifier);
@@ -113,12 +98,9 @@ export async function handleAuthCode(code, state) {
   await exchangeCodeForTokens(code, codeVerifier);
 }
 
-// Web only: on page load, check for ?code=&state= left by Spotify's redirect to /callback.
-// Returns the code/state pair (and clears it from the URL) so the caller can run it
-// through the same error handling as the Capacitor auth flow.
+// On page load, check for ?code=&state= left by Spotify's redirect to /callback.
+// Returns the code/state pair (and clears it from the URL).
 export function getWebRedirectParams() {
-  if (getPlatform() !== 'web') return null;
-
   const params = new URLSearchParams(window.location.search);
   const code = params.get('code');
   const state = params.get('state');
