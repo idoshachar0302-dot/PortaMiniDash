@@ -1,5 +1,5 @@
 import { config } from '../config.js';
-import { getCurrentPosition, reverseGeocode } from '../location/geo.js';
+import { getCurrentPosition, reverseGeocode, geocodeCity } from '../location/geo.js';
 import {
   getLocationMode,
   getManualLocation,
@@ -186,8 +186,18 @@ export function initWeather() {
       els.locationStatus.textContent = `${coords.lat.toFixed(3)}, ${coords.lon.toFixed(3)}`;
 
       try {
-        placeName = await reverseGeocode(coords.lat, coords.lon, config.owmApiKey);
-        if (placeName) {
+        const place = await reverseGeocode(coords.lat, coords.lon, config.owmApiKey);
+        if (place) {
+          // Snap to the same direct-geocode record manual mode uses for
+          // this city: raw GPS/IP coords differ per device and OWM
+          // interpolates per-coordinate, so without this two devices in
+          // the same city show slightly different temps and graphs.
+          const canonical = await geocodeCity(
+            [place.name, place.country].filter(Boolean).join(','),
+            config.owmApiKey,
+          );
+          if (canonical) coords = { lat: canonical.lat, lon: canonical.lon };
+          placeName = canonical?.name || [place.name, place.country].filter(Boolean).join(', ');
           els.location.textContent = placeName;
           els.locationStatus.textContent = placeName;
         }

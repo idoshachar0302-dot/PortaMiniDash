@@ -36,5 +36,5 @@ export async function reverseGeocode(lat, lon, apiKey) {
   if (!results.length) return null;
 
   const { name, country } = results[0];
-  return [name, country].filter(Boolean).join(', ');
+  return { name, country };
 }
