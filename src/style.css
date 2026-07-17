@@ -476,10 +476,10 @@ body {
   border: none;
   background: transparent;
   color: var(--text);
-  font-size: clamp(0.9rem, 2cqw, 1.2rem);
+  font-size: clamp(1.05rem, 2.4cqw, 1.4rem);
   line-height: 1;
-  width: clamp(1.6rem, 4cqw, 2.2rem);
-  height: clamp(1.6rem, 4cqw, 2.2rem);
+  width: clamp(1.9rem, 4.7cqw, 2.6rem);
+  height: clamp(1.9rem, 4.7cqw, 2.6rem);
   cursor: pointer;
   border-radius: 50%;
   display: flex;
