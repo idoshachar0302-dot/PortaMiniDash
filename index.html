@@ -94,8 +94,16 @@
 
           <div class="setting-row">
             <span>Location</span>
-            <span class="status-text" id="location-status">Requesting...</span>
+            <div class="mode-toggle" id="location-mode-toggle" role="group" aria-label="Location mode">
+              <button class="mode-btn" data-mode="auto">Auto</button>
+              <button class="mode-btn" data-mode="manual">Manual</button>
+            </div>
           </div>
+          <div class="setting-row" id="manual-location-row" hidden>
+            <input type="text" class="text-input" id="manual-location-input" placeholder="City, e.g. London" enterkeyhint="done" aria-label="City for weather and time" />
+            <button class="action-btn" id="manual-location-apply-btn">Set</button>
+          </div>
+          <div class="status-text" id="location-status">Requesting...</div>
 
           <button class="action-btn close-btn" id="settings-close-btn">Close</button>
         </div>

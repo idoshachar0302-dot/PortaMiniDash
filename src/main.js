@@ -3,6 +3,7 @@ import { initClock } from './clock/widget.js';
 import { initWeather } from './weather/widget.js';
 import { initSpotify } from './spotify/widget.js';
 import { initSettings } from './settings.js';
+import { loadLocationSettings } from './location/state.js';
 
 // iOS Safari only applies :active styles when a touchstart listener is
 // registered somewhere in the document, otherwise it skips straight to
@@ -10,7 +11,12 @@ import { initSettings } from './settings.js';
 // never appears.
 document.addEventListener('touchstart', () => {}, { passive: true });
 
-initClock();
-initWeather();
-initSpotify();
-initSettings();
+(async () => {
+  // Clock and weather read the location mode synchronously on first render.
+  await loadLocationSettings();
+
+  initClock();
+  initWeather();
+  initSpotify();
+  initSettings();
+})();

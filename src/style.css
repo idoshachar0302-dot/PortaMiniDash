@@ -651,6 +651,49 @@ body {
   gap: 12px;
 }
 
+.mode-toggle {
+  display: flex;
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mode-btn {
+  min-height: 40px;
+  padding: 0 14px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mode-btn.active {
+  background: var(--accent);
+  color: #0b0b0b;
+}
+
+.text-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  font-size: 0.95rem;
+  /* The body disables selection for the kiosk feel; text entry needs it. */
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
 .action-btn {
   min-height: 44px;
   padding: 0 16px;

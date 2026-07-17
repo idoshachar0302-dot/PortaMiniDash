@@ -1,5 +1,11 @@
 import { config } from '../config.js';
 import { getCurrentPosition, reverseGeocode } from '../location/geo.js';
+import {
+  getLocationMode,
+  getManualLocation,
+  setManualTimezoneOffset,
+  onLocationSettingsChange,
+} from '../location/state.js';
 import { WEATHER_ICONS, ICON_THERMOMETER } from '../lib/icons.js';
 
 const WEATHER_REFRESH_MS = 10 * 60 * 1000; // weather changes slowly, poll every 10 min
@@ -129,6 +135,11 @@ export function initWeather() {
     if (!coords) return;
     try {
       const data = await fetchCurrentWeather(coords.lat, coords.lon);
+      // data.timezone is the location's UTC offset in seconds — the clock
+      // widget needs it to show the manual location's local time.
+      if (getLocationMode() === 'manual' && data.timezone != null) {
+        setManualTimezoneOffset(data.timezone);
+      }
       const weather = data.weather?.[0];
       els.icon.innerHTML = iconFor(weather?.icon);
       els.temp.textContent = `${Math.round(data.main.temp)}°C`;
@@ -153,6 +164,23 @@ export function initWeather() {
   }
 
   async function refreshLocation() {
+    if (getLocationMode() === 'manual') {
+      const manual = getManualLocation();
+      if (!manual) {
+        coords = null;
+        els.locationStatus.textContent = 'Enter a city and press Set';
+        els.desc.textContent = 'Set a location in settings';
+        return;
+      }
+      coords = { lat: manual.lat, lon: manual.lon };
+      placeName = manual.name;
+      els.locationStatus.textContent = manual.name;
+      els.location.textContent = manual.name;
+      await refreshWeather();
+      await refreshForecast();
+      return;
+    }
+
     try {
       coords = await getCurrentPosition();
       els.locationStatus.textContent = `${coords.lat.toFixed(3)}, ${coords.lon.toFixed(3)}`;
@@ -177,6 +205,7 @@ export function initWeather() {
   }
 
   refreshLocation();
+  onLocationSettingsChange(refreshLocation);
   setInterval(refreshWeather, WEATHER_REFRESH_MS);
   setInterval(refreshForecast, FORECAST_REFRESH_MS);
   setInterval(refreshLocation, LOCATION_REFRESH_MS);

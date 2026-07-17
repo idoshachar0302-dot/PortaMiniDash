@@ -1,7 +1,14 @@
+import { getLocationMode, getManualLocation } from '../location/state.js';
+
 // en-US forces the same 12-hour AM/PM format as the NY clock regardless of
 // the device's locale.
 const localTimeFmt = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit' });
 const localDateFmt = new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+// Manual-location time is computed as UTC + the location's stored offset, so
+// the shifted Date must be formatted in UTC to read as that location's wall
+// clock.
+const manualTimeFmt = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' });
+const manualDateFmt = new Intl.DateTimeFormat(undefined, { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric' });
 const nyTimeFmt = new Intl.DateTimeFormat('en-US', {
   timeZone: 'America/New_York',
   hour: '2-digit',
@@ -56,8 +63,17 @@ export function initClock() {
   function update() {
     const now = new Date();
 
-    els.localTime.textContent = localTimeFmt.format(now);
-    els.localDate.textContent = localDateFmt.format(now);
+    // Falls back to device time until the manual location's UTC offset is
+    // known (the weather widget stores it after its first fetch).
+    const manual = getLocationMode() === 'manual' ? getManualLocation() : null;
+    if (manual?.tzOffsetSec != null) {
+      const shifted = new Date(now.getTime() + manual.tzOffsetSec * 1000);
+      els.localTime.textContent = manualTimeFmt.format(shifted);
+      els.localDate.textContent = manualDateFmt.format(shifted);
+    } else {
+      els.localTime.textContent = localTimeFmt.format(now);
+      els.localDate.textContent = localDateFmt.format(now);
+    }
     els.nyTime.textContent = nyTimeFmt.format(now);
     els.nyDate.textContent = nyDateFmt.format(now);
 
